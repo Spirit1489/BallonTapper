@@ -92,5 +92,9 @@ class Balloon(context: Context) : AppCompatImageView(context), View.OnTouchListe
         return isPopped
     }
 
+    fun setPopped(boolean: Boolean){
+        isPopped = boolean
+    }
+
 
 }

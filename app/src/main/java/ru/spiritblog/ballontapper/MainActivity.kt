@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity(), PopListener {
     lateinit var btn: Button
     private var colors: Array<Int> = arrayOf(0, 0, 0)
     private val pinImages: ArrayList<ImageView> = ArrayList()
+    private val balloons: ArrayList<Balloon> = ArrayList()
     private var scrWidth = 0F
     private var scrHeight = 0F
     private var level = 0
@@ -38,13 +39,16 @@ class MainActivity : AppCompatActivity(), PopListener {
     private var balloonsPerLevel = 8
     private var balloonsPopped = 0
 
+    private lateinit var audio: Audio
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
-
+        audio = Audio(this)
+        audio.prepareMediaPlayer(this)
 
 
 
@@ -135,6 +139,8 @@ class MainActivity : AppCompatActivity(), PopListener {
 
     private fun startGame() {
 
+        audio.playMusic()
+
         //reset the scores
         userScore = 0
         level = 1
@@ -161,6 +167,7 @@ class MainActivity : AppCompatActivity(), PopListener {
         btemp.x = xPos.toFloat()
 
         contentView.addView(btemp)
+        balloons.add(btemp)
         btemp.release(scrHeight, 5000)
         Log.d(TAG, "Ballon created")
 
@@ -201,7 +208,6 @@ class MainActivity : AppCompatActivity(), PopListener {
         private var balloonsLaunched = 0
 
 
-
         override fun run() {
             while (balloonsLaunched < balloonsPerLevel) {
                 balloonsLaunched++
@@ -237,6 +243,8 @@ class MainActivity : AppCompatActivity(), PopListener {
 
 
     override fun popBalloon(bal: Balloon, isTouched: Boolean) {
+
+        audio.playSound()
 
 
         balloonsPopped++
@@ -288,11 +296,20 @@ class MainActivity : AppCompatActivity(), PopListener {
 
     private fun gameOver() {
 
+
         isGameStopped = true
         Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show()
         btn.text = "Play game"
 
 
+        balloons.forEach {
+            it.setPopped(true)
+            contentView.removeView(it)
+        }
+
+
+        balloons.clear()
+        audio.pauseMusic()
 
 
     }
